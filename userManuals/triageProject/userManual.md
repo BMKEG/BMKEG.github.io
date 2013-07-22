@@ -10,7 +10,7 @@ of the system.
 Installation
 ------------
 
-This system is provided as a *.tar.gz archive for Unix and Linux systems, 
+This system is provided as a \*.tar.gz archive for Unix and Linux systems, 
 a \*.dmg instalallable for Macs and an \*.exe installable for PCs.
 
 

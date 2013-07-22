@@ -1,23 +1,18 @@
-lapdftextServer
-===============
+The SciKnowMine Triage Application
+==================================
 
-A web application resource (*.war) file for a simple client to show the block classification for a given LAPDFText rule file. 
+We present here a user manual for running and maintaining a web-based system for peforming document
+triage given a corpus of PDF files. We will describe processes for installation, execution and maintenance 
+of the system. 
 
-![Simple Screenshot](src/main/docs/screenshot1.png?raw=true)
+*Note that this system is provided with no warrenty or 
 
-For GitHub users, we advocate the use of Maven to build and run the system from 
-the command line. This runs somewhat slowly but will execute out-of-the-box. 
+Installation
+------------
 
-Building the system
--------------------
+This system is provided as a *.tar.gz archive for Unix and Linux systems, 
+a \*.dmg instalallable for Macs and an \*.exe installable for PCs.
 
-The system should build using the following maven command. Not only does 
-this build the *.war file, but it also copies files pertaining to the 
-'View-Primitive Data Model framework' (VPMDf) that the system needs to
-construct the underlying database.
-
-1. Make sure you have both the `bmkeg-parent` and the `lapdftextServer` repositories as sibling directories in your workspace.
-2. run `mvn clean package`. This will perform all build functions, including retreiving all dependencies.  
 
 Running system commands
 -----------------------

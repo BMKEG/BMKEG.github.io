@@ -83,62 +83,170 @@ for existing user with suitable permissions.
 
 ```
 buildTriageDatabase -db <name-of-database> -l <login> -p <password>        
-``` 
+
+Arguments:  -db DBNAME -l LOGIN -p PASSWD
+
+ Options: 
+
+ -db DBNAME : Database name
+ -l LOGIN   : Database login
+ -p PASSWD  : Database password
+```
 
 ### Creating a Target Corpora 
 
-The first step to runnning the system is to build the corpora that hold the articles. 
+The first step to runnning the system is to build corpora that the triaged articles are being sorted into. 
 
 The following example would create a corpus named 'GO', owned by a user called 'Rocky' with the single letter code 'G'. 
-command generates a 
+Each target corpus could be all papers concerned with Gene Ontology curation or all papers curated into 
+the database as a whole. 
 
 ```
 editArticleCorpus -name "GO" -desc "Gene Ontology" -owner "Rocky" -regex "G" 
                   -db <name-of-database> -l <login> -p <password> 
+                  
+Arguments:  -db DBNAME -desc DESCRIPTION -l LOGIN -name NAME -owner OWNER -p PASSWD [-regex REGEX]
+
+ Options: 
+
+ -db DBNAME        : Database name
+ -desc DESCRIPTION : Corpus description
+ -l LOGIN          : Database login
+ -name NAME        : Corpus name
+ -owner OWNER      : Corpus owner
+ -p PASSWD         : Database password
+ -regex REGEX      : Regular expression to recognize incoming files                  
 ``` 
 
+> Note that the first time you run a database command in this system, the system needs to generate a lookup object 
+for the many Journals referenced in pubmed. This is a one-time step. 
 
-**Adding Rule Files**
+### Creating a Target Corpora 
 
-Note that you can only refer to the rule file by name in subsequent commands, so the rules files 
-have to be uploaded first for the command line functions to work.
+The next step is to build the triage corpora that hold the articles. 
+
+A triage corpus is a special kind of corpus used to organize a collection of articles for the triaging procedure. 
+Each triage corpus should denote a natural collection of papers (such as all those papers assigned to a specific 
+individual or all papers from a given Journal). A triage corpus is the entry point for a paper in the system.
+
+The following example would create a triage corpus named 'curator1', owned by a user called 'Curator 1'. 
 
 ```
-mvn exec:java -Dexec.mainClass="edu.isi.bmkeg.lapdf.bin.AddFTDRuleSet" 
-        -Dexec.args="<path-to-rule-file> <dbName> <login> <password>"        
+editTriageCorpus -name "curator1" -desc "Curator 1's triage corpus" -owner "Curator 1"
+                  -db <name-of-database> -l <login> -p <password> 
+
+Arguments:  -db DBNAME -desc DESCRIPTION -l LOGIN -name NAME -owner OWNER -p PASSWD
+
+ Options: 
+
+ -db DBNAME        : Database name
+ -desc DESCRIPTION : Corpus description
+ -l LOGIN          : Database login
+ -name NAME        : Corpus name
+ -owner OWNER      : Corpus owner
+ -p PASSWD         : Database password
+                  
 ``` 
 
-**Adding PDF Files**
+### Loading Articles into a Triage Corpus 
  
-Here is where you can iterate over large numbers of PDF files and upload them into the system. 
+The crucial task of loading files into a triage corpus is performed by the following function:
 
 ```
-mvn exec:java -Dexec.mainClass="edu.isi.bmkeg.lapdf.bin.AddFTD" 
-        -Dexec.args="<path-to-pdf-file/dir> <dbName> <login> <password> [<rule-file-name>]"        
+buildTriageCorpusFromPdfDir -pdfs </complete/path/to/pdf/directory> -corpus "<triage-corpus-name>"
+                  -db <name-of-database> -l <login> -p <password> 
+                  
+Arguments:  [-codeList CODES] -corpus CORPUS -db DBNAME -l LOGIN -p PASSWD -pdfs PDF-DIR-OR-FILE [-rules FILE]
+
+ Options: 
+
+ -codeList CODES       : Encoded files
+ -corpus CORPUS        : Corpus name
+ -db DBNAME            : Database name
+ -l LOGIN              : Database login
+ -p PASSWD             : Database password
+ -pdfs PDF-DIR-OR-FILE : Pdfs directory or file
+ -rules FILE           : Rules file
 ``` 
 
-**Run Rules on Files**
- 
-Here is where you can rerun rules over the PDF files in the database already.
+This will run through all files in the targeted directory and load them into the named triage corpus. Note 
+that the system will iterate over *every target corpus* and assign an in-out code to every article. The user 
+may supply formatted codes in a text file (using the `-codeList` option) rather than editing each file
+name on disk. Thus, if a PDF file has the filename `19763139.pdf` with an entry `19763139_A.pdf` in the codeList
+file, it would be assigned a code of `in` to the target corpus designated by the letter `A` and a code of `out` to 
+all others. If no codes are assigned either from the file names or from the codeList then *all articles in the
+upload will be assigned a code of `unassigned` for all corpora. 
+
+Note also that the way that the text is extracted from the PDF files uses rule files for the `LAPDF-Text` system. 
+You may use a specified rule file here to improve performance of the text extraction if necessary.  
+
+### Train machine learning classifiers
+
+Before we can use the classifiers, we need to train them. This is done by the following command:
 
 ```
-mvn exec:java -Dexec.mainClass="edu.isi.bmkeg.lapdf.bin.RunRuleSetOnFTD" 
-        -Dexec.args="<pdf-file-name> <rule-file-name> <dbName> <login> <password>"        
-``` 
+triageDocumentsClassifier -train -targetCorpus "GO" [-homeDir /path/to/directory/for/model] 
+                  -db <name-of-database> -l <login> -p <password> 
+                  
+ -db DBNAME         : Database name
+ -homeDir DIR       : Directory where application data will be persisted
+ -l LOGIN           : Database login
+ -p PASSWD          : Database password
+ -targetCorpus NAME : The target corpus that we're linking to
+ -train             : If present will train and generate model, if absent will
+                      compute and update prediction scores in Triage Document.
+                      Either -train or -predict should be specified.
+ -triageCorpus NAME : The triage corpus to be evaluated. It is required if
+                      -predict is used.
+```
 
-Running the web-app
--------------------
+This runs through all the example data from all the triage corpora where the in-out code is set to 
+either `in` or `out` and trains an SVM classifier (derived from a baseline set of features). There is an
+option argument for where the model should be placed, if this is not set then the model will be saved in 
+the home directory of the user running the command. 
 
-**First use Jetty to start the server**
+### Use classifier to assign papers to target corpora.
+
+Applying the classifier is accomplished with the following command:
 
 ```
-mvn jetty:run-war
+triageDocumentsClassifier -predict -targetCorpus "GO" [-homeDir /path/to/directory/for/model] 
+                  -db <name-of-database> -l <login> -p <password> 
+                  
+ -db DBNAME         : Database name
+ -homeDir DIR       : Directory where application data will be persisted
+ -l LOGIN           : Database login
+ -p PASSWD          : Database password
+ -targetCorpus NAME : The target corpus that we're linking to
+ -predict           : If present will compute and update prediction scores in
+                      Triage Document. Either -train or -predict should be
+                      specified.
+ -triageCorpus NAME : The triage corpus to be evaluated. It is required if
+                      -predict is used.
+```
+
+Note that execution of this command is exactly like the training step with a single option changed. This will 
+generate scores for each paper in each category.  
+This runs through all the example data from all the triage corpora where the in-out code is set to 
+either `in` or `out` and trains an SVM classifier (derived from a baseline set of features). There is an
+option argument for where the model should be placed, if this is not set then the model will be saved in 
+the home directory of the user running the command. 
+
+Starting the Triage Web Application Server
+------------------------------------------
+```
+triageServer  -db <name-of-database> -l <login> -p <password>
 ``` 
 
-**Navigate in a browser to:**  `http://localhost:8080/lapdftextServer` 
+This should start the web server so that the curators can access the display.
 
-Caveats
--------
+Accessing the Triage Web App
+----------------------------
 
-* The system is based on AMF-messaging to a Java-based server which talks to an underlying MySQL database and so is a little slow in the upload / rule-file execution / download process.
-* The system runs out of the box using the maven commands as shown but is still a research prototype.
+Navigate in a browser to:  `http://localhost:8080/triage` 
+
+Stopping the Triage Web App Server
+----------------------------------
+
+Currently you should just kill the job that was started with the triageServer command. 
+

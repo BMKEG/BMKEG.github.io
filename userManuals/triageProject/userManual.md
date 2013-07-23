@@ -5,21 +5,45 @@ We present here a user manual for running and maintaining a web-based system for
 triage given a corpus of PDF files. We will describe processes for installation, execution and maintenance 
 of the system. 
 
-*Note that this system is provided with no warrenty or 
+*Note that this system is provided with no warranty or guarantee* 
+
+Pre-Installation Requirements 
+----------------
+
+* MySQL 5.1 (http://www.mysql.com/)
+** http://dev.mysql.com/downloads/mysql/5.1.html
+* SwfTools (http://www.swftools.org/)
+** http://wiki.swftools.org/wiki/Installation
+
+The Server:
+  - Must own a port number to process http requests from client web browsers.
+  - Must be able to send http requests to http://eutils.ncbi.nlm.nih.gov (PubMed's eCitation services).
+  - Must be able to login to MySql with a user defined login with privileges to create (and destroy) databases.
 
 Installation
 ------------
 
-This system is provided as a \*.tar.gz archive for Unix and Linux systems, 
-a \*.dmg instalallable for Macs and an \*.exe installable for PCs.
+This system is provided as a `\*.tar.gz` archive for Unix and Linux systems, 
+a `\*.dmg` instalallable for Macs and an `\*.exe` installable for PCs.
 
+All packages are available for download from http://bmkeg.s3-website-us-west-2.amazonaws.com/index.html#triage
 
-Running system commands
+Using the Triage System
 -----------------------
 
-This web application uses the VPMDf which uses an underlying MySQL database. 
-The first step of running the system is to (A) build the database and (B) 
-populate it with PDF files. 
+Once installed, the system permits two modes of use: (A) using 
+*command-line tools to administer the server, and upload/process scientific articles into corpora* and 
+(B) use the *web interface to assign articles to specific corpora*. 
+
+### Setting up the swfTools directory
+
+The system uses the `pdf2swf` command to convert PDF files to the SWF file for displaying in 
+FlexPaper (http://flexpaper.devaldi.com/). We therefore have to identify to the system where to find 
+the pdf2swf executable with the following command.
+
+```
+setSwfToolsBinDirectory </path/to/pdf2swf/executable>
+```
 
 **Building the database**
 

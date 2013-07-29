@@ -2,8 +2,10 @@ Here is a Confluence template for the evaluation of BIRN Capabilities based on B
 
 Copy and paste this page into your wiki space and use it to evaluate the technical readiness level of your work according to CMMI-DEV 1.3 criteria (developed by the Operations WG).
 
-h3. Concept
+### Concept
 
+| Check | Condition |
+| ---- |:---- |
 |   | The use cases for the capability are explicitly documented. (A “use case” is a specific activity that the capability performs for a specific user in a specific environment.)|
 |   | A chartered BIRN working group owns the capability.|
 |   | The working group that owns the capability includes relevant user representatives.|
@@ -14,8 +16,10 @@ h3. Concept
 |   | Notes from relevant steering committee reviews and working group meetings are available.|
 |   | Decisions regarding the capability’s development schedule and resource assignments are explicitly recorded.|
 
-h3. Prototype
+### Prototype
 
+| Check | Condition |
+| ---- |:---- |
 |   | The working group that owns the capability has documented quality requirements for the capability. (E.g., performance, stability, reliability, sustainability, ease of use.)|
 |   | All code and supporting documents for the capability (manuals, design docs, etc.) are stored in a source repository.|
 |   | The development team limits where requirements and changes to requirements may come from.|
@@ -31,8 +35,10 @@ h3. Prototype
 |   | The operations working group produces and records capability readiness assessment when requested.|
 |   | Changes in readiness levels are monitored and recorded in notes by the steering committee.|
 
-h1. Limited availability
+### Limited availability
 
+| Check | Condition |
+| ---- |:---- |
 |   | The working group that owns the capability has established specific success criteria for the capability in an end user deployment.|
 |   | The development team stores and tracks the status of the capability’s requirements in a tracking system or database. 
 |   | The working group that owns the capability maintains the traceability (relationship) between end user requirements and technical capability requirements.|
@@ -58,8 +64,10 @@ h1. Limited availability
 |   | Data collection and reporting tasks (e.g., usage reports) are explicitly covered in the capability’s project plan(s).|
 |   | The working group that owns the capability has established a help desk function for the capability.|
 
-h1. General availability
+### General availability
 
+| Check | Condition |
+| ---- |:---- |
 |   | Representative end users have validated the capability’s use cases, quality requirements, and success criteria.|
 |   | The development team provides a maintenance manual for the capability.|
 |   | The development team provides user-training materials for the capability.
@@ -70,17 +78,3 @@ h1. General availability
 |   | The development team maintains a record or database of all change requests per version.|
 |   | When metrics data is shared beyond the development team, it is placed in a context that makes it relevant to the recipients’ needs.|
 |   | The working group that owns the capability has documented the typical/critical help desk functions|
-
-
-
-
-
-
-
-
-
-
-
-
-
-	

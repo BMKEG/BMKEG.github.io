@@ -1,6 +1,6 @@
 Here is a Confluence template for the evaluation of BIRN Capabilities based on BIRN Technical Readiness Levels. 
 
-Copy and paste this page into your wiki space and use it to evaluate the technical readiness level of your work according to CMMI-DEV 1.3 criteria (developed by the Operations WG).
+Copy and paste this page into your wiki space and use it to evaluate the technical readiness level of your work according to CMMI-DEV 1.3 criteria (developed by the BIRN Operations WG).
 
 ### Concept
 
